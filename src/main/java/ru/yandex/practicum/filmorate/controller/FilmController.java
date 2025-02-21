@@ -1,7 +1,44 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 
+import java.util.*;
+
+@Slf4j
 @RestController
-public class FilmController {
+@RequestMapping("/films")
+public class FilmController extends BaseEntityController<Film> {
+
+    @GetMapping
+    public Collection<Film> findAll() {
+        log.info("Получен запрос на получение всех фильмов. Количество фильмов: {}", entities.size());
+        return entities.values();
+    }
+
+    @PostMapping
+    public Film create(@Valid @RequestBody Film film) {
+        if (!film.isValidReleaseDate()) {
+            throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
+        }
+
+        film.setId(nextId++);
+        entities.put(film.getId(), film);
+        log.info("Добавлен новый фильм: {}", film);
+        return film;
+    }
+
+    @PutMapping
+    public Film update(@Valid @RequestBody Film film) {
+        if (!entities.containsKey(film.getId())) {
+            log.error("Ошибка обновления: фильм с id {} не найден", film.getId());
+            throw new ValidationException("Фильм с id " + film.getId() + " не найден");
+        }
+        entities.put(film.getId(), film);
+        log.info("Обновлен фильм: {}", film);
+        return film;
+    }
 }
