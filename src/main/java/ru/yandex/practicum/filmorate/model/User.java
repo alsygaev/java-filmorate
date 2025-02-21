@@ -9,9 +9,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
-    private Long id;
-
+public class User extends BaseEntity implements Identifiable {
     @NotBlank(message = "Email не должен быть пустым")
     @Email(message = "Некорректный формат email")
     private String email;

@@ -10,9 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Film {
-   private Long id;
-
+public class Film extends BaseEntity implements Identifiable {
    @NotBlank(message = "Название фильма не может быть пустым")
    private String name;
 

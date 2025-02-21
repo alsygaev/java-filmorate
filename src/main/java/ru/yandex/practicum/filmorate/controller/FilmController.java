@@ -11,14 +11,12 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/films")
-public class FilmController {
-    private final Map<Long, Film> films = new HashMap<>();
-    private long nextId = 1;
+public class FilmController extends BaseEntityController<Film> {
 
     @GetMapping
     public Collection<Film> findAll() {
-        log.info("Получен запрос на получение всех фильмов. Количество фильмов: {}", films.size());
-        return films.values();
+        log.info("Получен запрос на получение всех фильмов. Количество фильмов: {}", entities.size());
+        return entities.values();
     }
 
     @PostMapping
@@ -28,18 +26,18 @@ public class FilmController {
         }
 
         film.setId(nextId++);
-        films.put(film.getId(), film);
+        entities.put(film.getId(), film);
         log.info("Добавлен новый фильм: {}", film);
         return film;
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
-        if (!films.containsKey(film.getId())) {
+        if (!entities.containsKey(film.getId())) {
             log.error("Ошибка обновления: фильм с id {} не найден", film.getId());
             throw new ValidationException("Фильм с id " + film.getId() + " не найден");
         }
-        films.put(film.getId(), film);
+        entities.put(film.getId(), film);
         log.info("Обновлен фильм: {}", film);
         return film;
     }

@@ -13,14 +13,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 @RestController
 @RequestMapping("/users")
-public class UserController {
-    private final Map<Long, User> users = new ConcurrentHashMap<>();
-    private long nextId = 1;
+public class UserController extends BaseEntityController<User> {
+    //private final Map<Long, User> users = new ConcurrentHashMap<>();
+    //private long nextId = 1;
 
     @GetMapping
     public Collection<User> findAll() {
-        log.info("Получен запрос на получение всех пользователей. Количество пользователей: {}", users.size());
-        return users.values();
+        log.info("Получен запрос на получение всех пользователей. Количество пользователей: {}", entities.size());
+        return entities.values();
     }
 
     @PostMapping
@@ -29,18 +29,18 @@ public class UserController {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-        users.put(user.getId(), user);
+        entities.put(user.getId(), user);
         log.info("Создан новый пользователь: {}", user);
         return user;
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        if (!users.containsKey(user.getId())) {
+        if (!entities.containsKey(user.getId())) {
             log.error("Ошибка обновления: пользователь с id {} не найден", user.getId());
             throw new ValidationException("Пользователь с id " + user.getId() + " не найден");
         }
-        users.put(user.getId(), user);
+        entities.put(user.getId(), user);
         log.info("Обновлен пользователь: {}", user);
         return user;
     }
